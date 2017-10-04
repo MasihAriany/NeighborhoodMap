@@ -1,31 +1,72 @@
 <!DOCTYPE html>
 <html>
   <head>
-	<script src="js/lib/knockout-3.4.2.js"></script>
-	<script src="js/app.js"></script>
+	<title>Neighborhood Map</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/css.css">
+	<script src="js/lib/knockout-3.2.0.js"></script>
   </head>
   <body>
-    <h3>Neighborhood Map</h3>
+	
+	
+	<div class="container row">
+		<div class="col-sm-3">
+			<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+		</div>
+		<div class="col-sm-6">
+			<form class="searhcBox">
+				<input id="searchInput" placeholder="Search.." onkeyup="filtering()" type="text"></input>
+			</form>
+		</div>
+		<div class="col-sm-3">
+			<h3> New York </h3>
+		</div>
+	</div>
+	<div id="mySidenav" class="sidenav">
+		<ul id="placesList" data-bind="foreach: locs()">
+				<li>
+					<a href="#"><span data-bind="text: name"></span></a>
+				</li>
+		</ul>
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	</div>
+	
+	<div class="container row">
     <div id="map"></div>
+	</div>
     <script>
 		function initMap() {
 			var map = new google.maps.Map(document.getElementById('map'), {
 				zoom: 13,
 				center: mapCenter.coords
 			});
-			for(var i = 0; i < locations().length; i++) {
+			console.log(viewModel.a);
+			for(var i = 0; i < locations.length; i++) {
 				var marker = new google.maps.Marker({
-					position: locations()[i].coords,
-					map: map
+					position: locations[i].coords,
+					map: map,
+					title: locations[i].name,
+					html: locations[i].name
 				});
 			};
+			var contentString = "InfoWindow";
+			var infowindow = new google.maps.InfoWindow({
+				content: contentString,
+				maxWidth: 200
+			});
+			marker.addListener('click', function() {
+				infowindow.open(map, marker);
+			});
 		}
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUsrJRmVBVHx7PkwAvd7cY6rDHGxfARKU&callback=initMap">
     </script>
-    
+	<script src="js/app.js"></script>
   </body>
 </html>
 
