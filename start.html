@@ -14,20 +14,22 @@
 	
 	
 	<div class="container row">
-		<div class="col-sm-3">
-			<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+		<div class="col-sm-3 col-xs-4">
+			<span class="OpenButton" onclick="openNav()">&#9776; Locations</span>
 		</div>
-		<div class="col-sm-6">
-			<form class="searhcBox">
-				<input id="searchInput" placeholder="Search.." onkeyup="filtering()" type="text"></input>
+		<div class="col-sm-6 col-xs-5">
+			<form class="searchBox">
+				<input id="searchInput" data-bind="value: query, valueUpdate: 'keyup'" 
+				placeholder="Search.." onkeyup="filtering()" type="text"></input>
+				<!--data-bind="value: query, valueUpdate: 'keyup'" -->
 			</form>
 		</div>
-		<div class="col-sm-3">
-			<h3> New York </h3>
+		<div class="col-sm-3 col-xs-3">
+			<h3 class="title"> New York </h3>
 		</div>
 	</div>
 	<div id="mySidenav" class="sidenav">
-		<ul id="placesList" data-bind="foreach: locs()">
+		<ul id="placesList" data-bind="foreach: filterPins">
 				<li>
 					<a href="#"><span data-bind="text: name"></span></a>
 				</li>
@@ -35,38 +37,23 @@
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 	</div>
 	
-	<div class="container row">
-    <div id="map"></div>
+	<div class="container row map">
+		<div id="map"></div>
 	</div>
-    <script>
-		function initMap() {
-			var map = new google.maps.Map(document.getElementById('map'), {
-				zoom: 13,
-				center: mapCenter.coords
-			});
-			console.log(viewModel.a);
-			for(var i = 0; i < locations.length; i++) {
-				var marker = new google.maps.Marker({
-					position: locations[i].coords,
-					map: map,
-					title: locations[i].name,
-					html: locations[i].name
-				});
-			};
-			var contentString = "InfoWindow";
-			var infowindow = new google.maps.InfoWindow({
-				content: contentString,
-				maxWidth: 200
-			});
-			marker.addListener('click', function() {
-				infowindow.open(map, marker);
-			});
-		}
+	<script>
+        function googleSuccess() {
+            console.log("Google Maps sucessfully loaded.")
+        };
+
+        function googleError() {
+            $("#map").append("<h3>Couldn't load Google Maps</h3>");
+        };
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUsrJRmVBVHx7PkwAvd7cY6rDHGxfARKU&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUsrJRmVBVHx7PkwAvd7cY6rDHGxfARKU&callbackcallback=googleSuccess" onerror="googleError()">
     </script>
 	<script src="js/app.js"></script>
+	<script src="js/map.js"></script>
   </body>
 </html>
 

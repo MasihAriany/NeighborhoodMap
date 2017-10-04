@@ -1,3 +1,8 @@
+/* ****************    MAP    **********************/
+
+
+var markers = [];
+
 function filtering() {
     // Declare variables
     var input, filter, ul, li, a, i;
@@ -18,7 +23,7 @@ function filtering() {
 }
 
 function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("mySidenav").style.width = "200px";
 }
 
 function closeNav() {
@@ -51,23 +56,89 @@ var locations = [
 		coords: {lat: 40.7633581, lng: -73.983060}
 	}
 	];
-	
+
 var mapCenter = {
-	coords: {lat: 40.7582937, lng: -74.0072724}
+	coords: {lat: 40.7582937, lng: -73.990}
 }
 
-var loc = function(locData){
-	this.name = ko.observable(locData.name);
-}
+function initMap() {
+	var map = new google.maps.Map(document.getElementById('map'), {
+		zoom: 13,
+		center: mapCenter.coords
+	});
+	//for(var i = 0; i < locations.length; i++) {
+	//	var marker = new google.maps.Marker({
+	//		position: locations[i].coords,
+	//		map: map,
+	//		title: locations[i].name,
+	//		html: locations[i].name
+	//	});
+	//};
+	
+	//infoWindow for displaying the name of the place which is clicked.
+	var contentString = "";
+	var infowindow = new google.maps.InfoWindow();
+	
+	//marker.addListener('click', function() {
+	//	infowindow.open(map, marker);
+	//});
+	var pin = function pin(map, name, lat, lng, text) {
+	
+		var marker;
+		this.name = ko.observable(name);
+		this.lat = ko.observable(lat);
+		this.lng = ko.observable(lng);
+		this.text = ko.observable(text);
+		this.marker = ko.observable(marker);
+		
+		// making a Google Map Marker for the selected location.
+		marker = new google.maps.Marker({
+			position: new google.maps.LatLng(lat, lng),
+			animation: google.maps.Animation.DROP,
+			title: name,
+			map: map
+		});
+		this.isVisible = ko.observable(false);
+		this.isVisible.subscribe(function(currentState) {
+			if (currentState) {
+				marker.setMap(map);
+			} else {
+				marker.setMap(null);
+			}
+		});
+
+		this.isVisible(true);
+		markers.push(marker);
+	}
+	
+
+
+
+/* ****************    REST    **********************/
+
 
 var viewModel = function() {
 	var self = this;
-	var a = "Hi";
 	this.locs = ko.observableArray([]);
-	
+	self.query = ko.observable('');
+	var i = 0;
 	locations.forEach(function(place) {
-		self.locs.push( new loc(place) );
+		self.locs.push( new pin(map, place.name, place.coords.lat, place.coords.lng, i) );
+		i++;
 	});
+
+	
+	self.filterPins = ko.computed(function () {
+		var search  = self.query().toLowerCase();
+		return ko.utils.arrayFilter(self.locs(), function (pin) {
+			var doesMatch = pin.name().toLowerCase().indexOf(search) >= 0;
+			pin.isVisible(doesMatch);
+			return doesMatch;
+		});
+	});
+	
 }
 
 ko.applyBindings(new viewModel());
+}
+window.onload = initMap;
