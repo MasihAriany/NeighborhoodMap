@@ -29,7 +29,7 @@
 		</div>
 	</div>
 	<div id="mySidenav" class="sidenav">
-		<ul id="placesList" data-bind="foreach: filterPins">
+		<ul id="placesList" data-bind="foreach: filterMarks">
 				<li>
 					<a class="places" data-bind="click: $parent.showStreetView.bind($data,$data.lat(), $data.lng())" href="#pano">
 						<!-- had to use $parent.fnction.bind($data, param), for avoiding the firing of the function on the load -->
