@@ -22,6 +22,26 @@ function filtering() {
     }
 }
 
+/*
+function streetView() {
+	$(document).ready(function() {
+		$('.places a').click(function(){
+			var map = new google.maps.Map(document.getElementById('map'), {
+				center: fenway,
+				zoom: 14
+			});
+		})
+	})
+}
+*/
+
+function tests(){
+	var b = $('.places').attr('href');
+	console.log(b);
+	
+}
+
+
 function openNav() {
     document.getElementById("mySidenav").style.width = "200px";
 }
@@ -44,7 +64,7 @@ var locations = [
 		coords: {lat: 40.758895, lng: -73.9851100}
 	},
 	{
-		name: 'Central Park',
+		name: 'CentralPark',
 		coords: {lat: 40.7828647, lng: -73.9675438}
 	},
 	{
@@ -91,6 +111,10 @@ function initMap() {
 		this.text = ko.observable(text);
 		this.marker = ko.observable(marker);
 		
+		var infowindow = new google.maps.InfoWindow({
+          content: this.name()
+        });
+		
 		// making a Google Map Marker for the selected location.
 		marker = new google.maps.Marker({
 			position: new google.maps.LatLng(lat, lng),
@@ -98,6 +122,9 @@ function initMap() {
 			title: name,
 			map: map
 		});
+		marker.addListener('click', function() {
+          infowindow.open(map, marker);
+        });
 		this.isVisible = ko.observable(false);
 		this.isVisible.subscribe(function(currentState) {
 			if (currentState) {
@@ -109,6 +136,8 @@ function initMap() {
 
 		this.isVisible(true);
 		markers.push(marker);
+		
+		
 	}
 	
 
@@ -116,29 +145,45 @@ function initMap() {
 
 /* ****************    REST    **********************/
 
-
-var viewModel = function() {
-	var self = this;
-	this.locs = ko.observableArray([]);
-	self.query = ko.observable('');
-	var i = 0;
-	locations.forEach(function(place) {
-		self.locs.push( new pin(map, place.name, place.coords.lat, place.coords.lng, i) );
-		i++;
-	});
-
-	
-	self.filterPins = ko.computed(function () {
-		var search  = self.query().toLowerCase();
-		return ko.utils.arrayFilter(self.locs(), function (pin) {
-			var doesMatch = pin.name().toLowerCase().indexOf(search) >= 0;
-			pin.isVisible(doesMatch);
-			return doesMatch;
+	var viewModel = function() {
+		var self = this;
+		this.locs = ko.observableArray([]);
+		self.query = ko.observable('');
+		var i = 0;
+		locations.forEach(function(place) {
+			self.locs.push( new pin(map, place.name, place.coords.lat, place.coords.lng, i) );
+			i++;
 		});
-	});
-	
-}
+		//console.log(self.locs()[3].text());
 
-ko.applyBindings(new viewModel());
+		
+		self.filterPins = ko.computed(function () {
+			var search  = self.query().toLowerCase();
+			return ko.utils.arrayFilter(self.locs(), function (pin) {
+				var doesMatch = pin.name().toLowerCase().indexOf(search) >= 0;
+				pin.isVisible(doesMatch);
+				return doesMatch;
+			});
+		});
+		
+		self.showStreetView = function(lati, lngi){
+			var pos = {lat: lati, lng: lngi};
+			var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('pano'), {
+              position: pos,
+              pov: {
+                heading: 34,
+                pitch: 10
+              }
+            });
+			//console.log(self.locs()[0].name());
+			map.setStreetView(panorama);
+			//we don't need to have nav for now.
+			closeNav();
+		}
+		
+	}
+
+	ko.applyBindings(new viewModel());
 }
 window.onload = initMap;

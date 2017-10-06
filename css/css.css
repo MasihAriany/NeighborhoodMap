@@ -1,8 +1,12 @@
 #map {
     height: 500px;
-    width: 100%;
+
 }
 
+#pano {
+	height: 400px;
+	/*float: right;*/
+}
 .title {
 	padding-bottom: 10px;
 	font-size: 30px;

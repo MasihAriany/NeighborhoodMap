@@ -31,26 +31,32 @@
 	<div id="mySidenav" class="sidenav">
 		<ul id="placesList" data-bind="foreach: filterPins">
 				<li>
-					<a href="#"><span data-bind="text: name"></span></a>
+					<a class="places" data-bind="click: $parent.showStreetView.bind($data,$data.lat(), $data.lng())" href="#pano">
+						<!-- had to use $parent.fnction.bind($data, param), for avoiding the firing of the function on the load -->
+						<span class="places" data-bind="text: name"></span>
+					</a>
 				</li>
 		</ul>
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 	</div>
 	
-	<div class="container row map">
-		<div id="map"></div>
+	<div class="container row">
+		<div class="col-sm-1"></div>
+		<div class="col-sm-10" id="map"></div>
+		<div class="col-sm-1"></div>
+	</div>
+	<div class="container row">
+		<div class="col-sm-1"></div>
+		<div class="col-sm-10" id="pano"></div>
+		<div class="col-sm-1"></div>
 	</div>
 	<script>
         function googleSuccess() {
             console.log("Google Maps sucessfully loaded.")
         };
-
-        function googleError() {
-            $("#map").append("<h3>Couldn't load Google Maps</h3>");
-        };
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUsrJRmVBVHx7PkwAvd7cY6rDHGxfARKU&callbackcallback=googleSuccess" onerror="googleError()">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUsrJRmVBVHx7PkwAvd7cY6rDHGxfARKU&callback=googleSuccess">
     </script>
 	<script src="js/app.js"></script>
 	<script src="js/map.js"></script>
