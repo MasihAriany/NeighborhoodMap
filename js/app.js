@@ -19,6 +19,59 @@ function filtering() {
     }
 }
 
+var apiKey = "c378793983b6dd0cec4e2257e601c106";
+var apiURL = "https://api.flickr.com/services/rest/";
+
+function searchText(parameters) {
+      //var requestParameters = Utility.extend(parameters, {
+       //  method: 'flickr.photos.search',
+        // api_key: apiKey,
+        // format: 'json'
+      //});
+	  var request = "https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=";
+	  request += apiKey;
+	  request += "&extras=view%3D50&text=";
+	  request += parameters.split(' ').join('+');
+	  request += "&per_page=100&format=json&jsoncallback=makeGallery";
+	  
+	  
+
+      var script = document.createElement('script');
+      script.src = request;
+      document.body.appendChild(script);
+      document.body.removeChild(script);
+	  //makeGallery();
+}
+
+function makeGallery(rsp) {
+	console.log("Fetching Flickr related photos");
+	
+		window.rsp = rsp;
+		console.log(rsp);
+		console.log("-------------------");
+    var s = "";
+    // http://farm{id}.static.flickr.com/{server-id}/{id}_{secret}_[mstb].jpg
+    // http://www.flickr.com/photos/{user-id}/{photo-id}
+    s = '<head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></head>';
+	s += "<h3>total number is: " + rsp.photos.photo.length + "</h3><br/>";
+    s += '<div class="container row">';
+    for (var i=0; i < rsp.photos.photo.length; i++) {
+      photo = rsp.photos.photo[i];
+      t_url = "http://farm" + photo.farm + ".static.flickr.com/" + 
+        photo.server + "/" + photo.id + "_" + photo.secret + "_" + "t.jpg";
+      p_url = "http://www.flickr.com/photos/" + photo.owner + "/" + photo.id;
+      s += '<div class="col-xs-2">';
+	  s +=  '<a href="' + p_url + '">' + '<img alt="'+ photo.title + 
+        '"src="' + t_url + '"/>' + '</a></div>';
+    }
+	s += "</div>"
+	console.log(s);
+    //document.writeln(s);
+	//Opening a new window
+	var myWindow = window.open("", "Flickr photos", "width=600,height=800");
+	myWindow.document.body.innerHTML = s;
+	
+}
 
 function openNav() {
     document.getElementById("mySidenav").style.width = "200px";
@@ -42,7 +95,7 @@ var locations = [
 		coords: {lat: 40.758895, lng: -73.9851100}
 	},
 	{
-		name: 'CentralPark',
+		name: 'Central Park',
 		coords: {lat: 40.7828647, lng: -73.9675438}
 	},
 	{
@@ -137,6 +190,11 @@ function initMap() {
 			self.locs.push( new pin(map, place.name, place.coords.lat, place.coords.lng) );
 
 		});
+		
+		self.flickr = function(){
+			console.log("comes inside Function!");
+			searchText(self.query());
+		};
 
 		//filtering the markers on the map by searching
 		self.filterMarks = ko.computed(function () {
